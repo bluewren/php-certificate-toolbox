@@ -146,8 +146,14 @@ class LEOrder
         }
 
         //retrieve the order
-        $get = $this->connector->get($this->orderURL);
-        if ($get['status'] !== 200) {
+        $sign = $this->connector->signRequestKid(
+            null,
+            $this->connector->accountURL,
+            $this->orderURL
+        );
+
+        $post = $this->connector->post($this->orderURL, $sign);
+        if ($post['status'] !== 200) {
             //@codeCoverageIgnoreStart
             $this->log->warning("Order for {$this->basename} could not be loaded. Creating new order.");
             $this->deleteOrderFiles();
@@ -156,7 +162,7 @@ class LEOrder
         }
 
         //ensure the order is still valid
-        if ($get['body']['status'] === 'invalid') {
+        if ($post['body']['status'] === 'invalid') {
             $this->log->warning("Order for {$this->basename} is 'invalid', unable to authorize. Creating new order.");
             $this->deleteOrderFiles();
             return false;
@@ -165,7 +171,7 @@ class LEOrder
         //ensure retrieved order matches our domains
         $orderdomains = array_map(function ($ident) {
             return $ident['value'];
-        }, $get['body']['identifiers']);
+        }, $post['body']['identifiers']);
         $diff = array_merge(array_diff($orderdomains, $domains), array_diff($domains, $orderdomains));
         if (!empty($diff)) {
             $this->log->warning('Domains do not match order data. Deleting and creating new order.');
@@ -174,13 +180,13 @@ class LEOrder
         }
 
         //the order is good
-        $this->status = $get['body']['status'];
-        $this->expires = $get['body']['expires'];
-        $this->identifiers = $get['body']['identifiers'];
-        $this->authorizationURLs = $get['body']['authorizations'];
-        $this->finalizeURL = $get['body']['finalize'];
-        if (array_key_exists('certificate', $get['body'])) {
-            $this->certificateURL = $get['body']['certificate'];
+        $this->status = $post['body']['status'];
+        $this->expires = $post['body']['expires'];
+        $this->identifiers = $post['body']['identifiers'];
+        $this->authorizationURLs = $post['body']['authorizations'];
+        $this->finalizeURL = $post['body']['finalize'];
+        if (array_key_exists('certificate', $post['body'])) {
+            $this->certificateURL = $post['body']['certificate'];
         }
 
         return true;
@@ -294,15 +300,21 @@ class LEOrder
      */
     private function updateOrderData()
     {
-        $get = $this->connector->get($this->orderURL);
-        if (strpos($get['header'], "200 OK") !== false) {
-            $this->status = $get['body']['status'];
-            $this->expires = $get['body']['expires'];
-            $this->identifiers = $get['body']['identifiers'];
-            $this->authorizationURLs = $get['body']['authorizations'];
-            $this->finalizeURL = $get['body']['finalize'];
-            if (array_key_exists('certificate', $get['body'])) {
-                $this->certificateURL = $get['body']['certificate'];
+        $sign = $this->connector->signRequestKid(
+            null,
+            $this->connector->accountURL,
+            $this->orderURL
+        );
+
+        $post = $this->connector->post($this->orderURL, $sign);
+        if (strpos($post['header'], "200 OK") !== false) {
+            $this->status = $post['body']['status'];
+            $this->expires = $post['body']['expires'];
+            $this->identifiers = $post['body']['identifiers'];
+            $this->authorizationURLs = $post['body']['authorizations'];
+            $this->finalizeURL = $post['body']['finalize'];
+            if (array_key_exists('certificate', $post['body'])) {
+                $this->certificateURL = $post['body']['certificate'];
             }
             $this->updateAuthorizations();
         } else {
@@ -735,8 +747,14 @@ class LEOrder
             return false;
         }
 
-        $get = $this->connector->get($this->certificateURL);
-        if (strpos($get['header'], "200 OK") === false) {
+        $sign = $this->connector->signRequestKid(
+            null,
+            $this->connector->accountURL,
+            $this->certificateURL
+        );
+
+        $post = $this->connector->post($this->certificateURL, $sign);
+        if (strpos($post['header'], "200 OK") === false) {
             $this->log->warning(
                 'Invalid response for certificate request for \'' . $this->basename .
                 '\'. Cannot save certificate.'
@@ -744,9 +762,8 @@ class LEOrder
             return false;
         }
 
-        return $this->writeCertificates($get['body']);
+        return $this->writeCertificates($post['body']);
     }
-
 
     private function writeCertificates($body)
     {

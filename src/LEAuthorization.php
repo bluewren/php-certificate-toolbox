@@ -37,12 +37,18 @@ class LEAuthorization
         $this->log = $log;
         $this->authorizationURL = $authorizationURL;
 
-        $get = $this->connector->get($this->authorizationURL);
-        if ($get['status'] === 200) {
-            $this->identifier = $get['body']['identifier'];
-            $this->status = $get['body']['status'];
-            $this->expires = $get['body']['expires'];
-            $this->challenges = $get['body']['challenges'];
+        $sign = $this->connector->signRequestKid(
+            null,
+            $this->connector->accountURL,
+            $this->authorizationURL
+        );
+
+        $post = $this->connector->post($this->authorizationURL, $sign);
+        if ($post['status'] === 200) {
+            $this->identifier = $post['body']['identifier'];
+            $this->status = $post['body']['status'];
+            $this->expires = $post['body']['expires'];
+            $this->challenges = $post['body']['challenges'];
         } else {
             //@codeCoverageIgnoreStart
             $this->log->error("LEAuthorization::__construct cannot find authorization $authorizationURL");
@@ -56,12 +62,18 @@ class LEAuthorization
 
     public function updateData()
     {
-        $get = $this->connector->get($this->authorizationURL);
-        if ($get['status'] === 200) {
-            $this->identifier = $get['body']['identifier'];
-            $this->status = $get['body']['status'];
-            $this->expires = $get['body']['expires'];
-            $this->challenges = $get['body']['challenges'];
+        $sign = $this->connector->signRequestKid(
+            null,
+            $this->connector->accountURL,
+            $this->authorizationURL
+        );
+
+        $post = $this->connector->post($this->authorizationURL, $sign);
+        if ($post['status'] === 200) {
+            $this->identifier = $post['body']['identifier'];
+            $this->status = $post['body']['status'];
+            $this->expires = $post['body']['expires'];
+            $this->challenges = $post['body']['challenges'];
         } else {
             //@codeCoverageIgnoreStart
             $this->log->error("LEAuthorization::updateData cannot find authorization " . $this->authorizationURL);
