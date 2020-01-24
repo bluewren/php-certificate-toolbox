@@ -35,20 +35,26 @@ class LEClientTest extends LETestCase
             //getOrCreateOrder
             $this->postNewOrderResponse(),
             $this->getAuthzResponse('example.org', false),
+            $this->headNewNonceResponse(),
             $this->getAuthzResponse('test.example.org', false),
+            $this->headNewNonceResponse(),
 
             //verifyPendingOrderAuthorization
             $this->postChallengeResponse(),
             $this->getAuthzResponse('example.org', true),
+            $this->headNewNonceResponse(),
             $this->postChallengeResponse(),
             $this->getAuthzResponse('test.example.org', true),
+            $this->headNewNonceResponse(),
 
             //finalizeOrder
             $this->getPostFinalizeResponse(),
             $this->getAuthzResponse('example.org', true),
+            $this->headNewNonceResponse(),
 
             //getCertificate
             $this->getCertResponse(),
+            $this->headNewNonceResponse(),
 
             new RequestException("Unexpected request", new Request('GET', 'test'))
         ]);
