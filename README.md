@@ -42,7 +42,7 @@ This client also depends on OpenSSL.
 Via Composer
 
 ``` bash
-$ composer require lordelph/php-certificate-toolbox
+$ composer require zwartpet/php-certificate-toolbox
 ```
 
 ## Usage
