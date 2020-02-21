@@ -32,7 +32,7 @@ but improved as follows
 
 ## Prerequisites
 
-The minimum required PHP version is 7.1.0 due to the implementation of ECDSA. 
+The minimum required PHP version is 7.0, but to use the ECDSA implementation you need 7.1
 
 This client also depends on OpenSSL.
 
