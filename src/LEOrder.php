@@ -67,6 +67,9 @@ class LEOrder
     /** @var CertificateStorageInterface storage interface provided to constructor */
     private $storage;
 
+    /** @var AccountStorageInterface */
+    private $accountStorage;
+
     /**
      * Initiates the LetsEncrypt Order class. If the base name is found in the $keysDir directory, the order data is
      * requested. If no order was found locally, if the request is invalid or when there is a change in domain names, a
@@ -74,6 +77,7 @@ class LEOrder
      *
      * @param LEConnector $connector The LetsEncrypt Connector instance to use for HTTP requests.
      * @param CertificateStorageInterface $storage
+     * @param AccountStorageInterface $accountStorage
      * @param LoggerInterface $log PSR-3 compatible logger
      * @param DNSValidatorInterface $dns DNS challenge checking service
      * @param Sleep $sleep Sleep service for polling
@@ -81,6 +85,7 @@ class LEOrder
     public function __construct(
         LEConnector $connector,
         CertificateStorageInterface $storage,
+        AccountStorageInterface $accountStorage,
         LoggerInterface $log,
         DNSValidatorInterface $dns,
         Sleep $sleep
@@ -91,6 +96,7 @@ class LEOrder
         $this->dns = $dns;
         $this->sleep = $sleep;
         $this->storage = $storage;
+        $this->accountStorage = $accountStorage;
     }
 
     /**
@@ -361,7 +367,7 @@ class LEOrder
 
     private function loadAccountKey()
     {
-        $keydata = $this->storage->getAccountPrivateKey();
+        $keydata = $this->accountStorage->getAccountPrivateKey();
         $privateKey = openssl_pkey_get_private($keydata);
         if ($privateKey === false) {
             //@codeCoverageIgnoreStart

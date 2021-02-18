@@ -77,8 +77,16 @@ class LEClientTest extends LETestCase
         $this->deleteDirectory($keys);
 
         $storage = new FilesystemCertificateStorage($keys);
+        $accountStorage = new FilesystemAccountStorage($keys);
 
-        $client = new LEClient(['test@example.com'], LEClient::LE_STAGING, $logger, $httpClient, $storage);
+        $client = new LEClient(
+            ['test@example.com'],
+            LEClient::LE_STAGING,
+            $logger,
+            $httpClient,
+            $storage,
+            $accountStorage
+        );
 
         //use our DNS and Sleep mocks
         $client->setDNS($dns->reveal());

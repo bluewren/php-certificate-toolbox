@@ -40,7 +40,7 @@ class LEConnector
     /** @var ClientInterface */
     private $httpClient;
 
-    /** @var CertificateStorageInterface */
+    /** @var AccountStorageInterface */
     private $storage;
 
     /**
@@ -49,13 +49,13 @@ class LEConnector
      * @param LoggerInterface $log
      * @param ClientInterface $httpClient
      * @param string $baseURL The LetsEncrypt server URL to make requests to.
-     * @param CertificateStorageInterface $storage
+     * @param AccountStorageInterface $storage
      */
     public function __construct(
         LoggerInterface $log,
         ClientInterface $httpClient,
         $baseURL,
-        CertificateStorageInterface $storage
+        AccountStorageInterface $storage
     ) {
 
         $this->baseURL = $baseURL;
