@@ -78,13 +78,21 @@ class LEOrderRSATest extends LETestCase
         $keyDir=sys_get_temp_dir().'/le-order-test';
         $this->deleteDirectory($keyDir);
 
-        $store = new FilesystemCertificateStorage($keyDir);
+        return new FilesystemCertificateStorage($keyDir);
+    }
+
+    protected function initAccountStore() : AccountStorageInterface
+    {
+        $keyDir=sys_get_temp_dir().'/le-order-test';
+        $this->deleteDirectory($keyDir);
+
+        $store = new FilesystemAccountStorage($keyDir);
         $this->addAccountKey($store);
 
         return $store;
     }
 
-    protected function addAccountKey(CertificateStorageInterface $store)
+    protected function addAccountKey(AccountStorageInterface $store)
     {
         $public=<<<PUBLIC
 -----BEGIN PUBLIC KEY-----
@@ -177,14 +185,14 @@ PRIVATE;
         $this->assertNull($store->getPublicKey($basename));
 
         //this should create a new order
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
 
         $this->assertNotEmpty($store->getPublicKey($basename));
 
 
         //if we construct again, it should load the existing order
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
 
         //it's enough to reach here without getting any exceptions
@@ -208,11 +216,11 @@ PRIVATE;
         $this->assertNull($store->getPublicKey($basename));
 
         //this should create a new order
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
 
         //and reload the validated order for coverage!
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
 
         //it's enough to reach here without getting any exceptions
@@ -237,13 +245,13 @@ PRIVATE;
         $this->assertNull($store->getPublicKey($basename));
 
         //this should create a new order
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
 
         //now we want to load the same order, but we're goign to make it invalid
         $conn = $this->mockConnector(true, true, 'invalid');
 
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
 
         //it's enough to reach here without getting any exceptions - we could do with a better mock for this
@@ -271,7 +279,7 @@ PRIVATE;
         $this->assertNull($store->getPublicKey($basename));
 
         //this should create a new order
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
 
         //we expect to find some pending http authorizations
@@ -300,14 +308,14 @@ PRIVATE;
         $this->assertNull($store->getPublicKey($basename));
 
         //this should create a new order
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
 
         $this->assertNotEmpty($store->getPublicKey($basename));
 
         //we construct again to get a reload, but with different domains
         $domains = ['example.com', 'test.example.com'];
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
 
         //this is allowed - we will just create a new order for the given domains, so it's enough to reach
@@ -332,7 +340,7 @@ PRIVATE;
         $notBefore = '';
         $notAfter = '';
 
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
     }
 
@@ -352,7 +360,7 @@ PRIVATE;
         $notBefore = '';
         $notAfter = '';
 
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
     }
 
@@ -372,7 +380,7 @@ PRIVATE;
         $notBefore = 'Hippopotamus';
         $notAfter = 'Primrose';
 
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
     }
 
@@ -392,7 +400,7 @@ PRIVATE;
         $this->assertNull($store->getPublicKey($basename));
 
         //this should create a new order
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
 
         $this->assertNotEmpty($store->getPublicKey($basename));
@@ -449,7 +457,7 @@ PRIVATE;
         $this->assertNull($store->getPublicKey($basename));
 
         //this should create a new order
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
 
         $this->assertFalse($order->allAuthorizationsValid());
@@ -553,7 +561,7 @@ PRIVATE;
         $this->assertNull($store->getPublicKey($basename));
 
         //this should create a new order
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
 
         $this->assertEmpty($store->getCertificate($basename));
@@ -582,7 +590,7 @@ PRIVATE;
         $this->assertNull($store->getPublicKey($basename));
 
         //this should create a new order
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
 
         $ok = $order->getCertificate();
@@ -605,7 +613,7 @@ PRIVATE;
         $this->assertNull($store->getPublicKey($basename));
 
         //this should create a new order
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
 
         $ok = $order->getCertificate();
@@ -628,7 +636,7 @@ PRIVATE;
         $this->assertNull($store->getPublicKey($basename));
 
         //this should create a new order
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
 
         $ok = $order->getCertificate();
@@ -651,7 +659,7 @@ PRIVATE;
         $this->assertNull($store->getPublicKey($basename));
 
         //this should create a new order
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
         $this->assertTrue($order->getCertificate());
 
@@ -675,7 +683,7 @@ PRIVATE;
         $this->assertNull($store->getPublicKey($basename));
 
         //this should create a new order
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
 
         $this->assertNotEmpty($store->getPublicKey($basename));
@@ -701,7 +709,7 @@ PRIVATE;
         $this->assertNull($store->getPublicKey($basename));
 
         //this should create a new order
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
         $this->assertTrue($order->getCertificate());
 
@@ -737,7 +745,7 @@ PRIVATE;
         $this->assertNull($store->getPublicKey($basename));
 
         //this should create a new order
-        $order = new LEOrder($conn, $store, $log, $dns, $sleep);
+        $order = new LEOrder($conn, $store, $this->initAccountStore(), $log, $dns, $sleep);
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
         $this->assertTrue($order->getCertificate());
 

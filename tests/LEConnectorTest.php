@@ -13,11 +13,11 @@ use GuzzleHttp\Psr7\Request;
 
 class LEConnectorTest extends LETestCase
 {
-    private function prepareKeysStorage($subdir = 'le-client-test') : CertificateStorageInterface
+    private function prepareKeysStorage($subdir = 'le-client-test') : AccountStorageInterface
     {
         $keys=sys_get_temp_dir().'/'.$subdir;
         $this->deleteDirectory($keys);
-        return new FilesystemCertificateStorage($keys);
+        return new FilesystemAccountStorage($keys);
     }
 
     public function testConstructor()

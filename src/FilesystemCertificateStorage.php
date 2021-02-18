@@ -24,39 +24,6 @@ class FilesystemCertificateStorage implements CertificateStorageInterface
         }
     }
 
-
-    /**
-     * @inheritdoc
-     */
-    public function getAccountPublicKey()
-    {
-        return $this->getMetadata('account.public');
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setAccountPublicKey($key)
-    {
-        $this->setMetadata('account.public', $key);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getAccountPrivateKey()
-    {
-        return $this->getMetadata('account.key');
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setAccountPrivateKey($key)
-    {
-        $this->setMetadata('account.key', $key);
-    }
-
     private function getDomainKey($domain, $suffix)
     {
         return str_replace('*', 'wildcard', $domain).'.'.$suffix;

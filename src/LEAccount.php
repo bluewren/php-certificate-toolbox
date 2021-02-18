@@ -36,9 +36,9 @@ class LEAccount
      * @param LoggerInterface $log   PSR-3 compatible logger
      * @param array $email           The array of strings containing e-mail addresses. Only used when creating a
      *                               new account.
-     * @param CertificateStorageInterface $storage  storage for account keys
+     * @param AccountStorageInterface $storage  storage for account keys
      */
-    public function __construct($connector, LoggerInterface $log, $email, CertificateStorageInterface $storage)
+    public function __construct($connector, LoggerInterface $log, $email, AccountStorageInterface $storage)
     {
         $this->connector = $connector;
         $this->storage = $storage;

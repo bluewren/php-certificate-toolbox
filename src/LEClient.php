@@ -47,6 +47,8 @@ class LEClient
     /** @var CertificateStorageInterface */
     private $storage;
 
+    /** @var AccountStorageInterface */
+    private $accountStorage;
 
     private $email;
 
@@ -63,6 +65,7 @@ class LEClient
      * @param CertificateStorageInterface|null $storage service for certificates. If not supplied, a default
      *                                storage object will retain certificates in the local filesystem in a directory
      *                                called certificates in the current working directory
+     * @param AccountStorageInterface|null $accountStorage same as storage but for the account
      * @param DNSValidatorInterface|null $dnsValidator service for checking DNS challenges. By default, this will use
      *                                Google's DNS over HTTPs service, which should insulate you from cached entries,
      *                                but this can be swapped for 'NativeDNS' or other alternative implementation
@@ -73,6 +76,7 @@ class LEClient
         LoggerInterface $logger = null,
         ClientInterface $httpClient = null,
         CertificateStorageInterface $storage = null,
+        AccountStorageInterface $accountStorage = null,
         DNSValidatorInterface $dnsValidator = null
     ) {
         $this->log = $logger ?? new NullLogger();
@@ -82,6 +86,7 @@ class LEClient
         $this->httpClient = $httpClient ?? new Client();
 
         $this->storage = $storage ?? new FilesystemCertificateStorage();
+        $this->accountStorage = $accountStorage ?? new FilesystemAccountStorage();
         $this->dns = $dnsValidator ?? new DNSOverHTTPS();
         $this->sleep = new Sleep;
         $this->email = $email;
@@ -124,7 +129,7 @@ class LEClient
     private function getConnector()
     {
         if (!isset($this->connector)) {
-            $this->connector = new LEConnector($this->log, $this->httpClient, $this->baseURL, $this->storage);
+            $this->connector = new LEConnector($this->log, $this->httpClient, $this->baseURL, $this->accountStorage);
 
             //we need to initialize an account before using the connector
             $this->getAccount();
@@ -141,7 +146,7 @@ class LEClient
     public function getAccount()
     {
         if (!isset($this->account)) {
-            $this->account = new LEAccount($this->getConnector(), $this->log, $this->email, $this->storage);
+            $this->account = new LEAccount($this->getConnector(), $this->log, $this->email, $this->accountStorage);
         }
         return $this->account;
     }
@@ -168,7 +173,14 @@ class LEClient
     {
         $this->log->info("LEClient::getOrCreateOrder($basename,...)");
 
-        $order = new LEOrder($this->getConnector(), $this->storage, $this->log, $this->dns, $this->sleep);
+        $order = new LEOrder(
+            $this->getConnector(),
+            $this->storage,
+            $this->accountStorage,
+            $this->log,
+            $this->dns,
+            $this->sleep
+        );
         $order->loadOrder($basename, $domains, $keyType, $notBefore, $notAfter);
 
         return $order;

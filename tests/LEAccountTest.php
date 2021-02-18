@@ -60,11 +60,11 @@ class LEAccountTest extends LETestCase
         return $connector->reveal();
     }
 
-    protected function initCertStorage()
+    protected function initAccountStorage()
     {
         $keyDir=sys_get_temp_dir().'/le-acc-test';
         $this->deleteDirectory($keyDir);
-        $store = new FilesystemCertificateStorage($keyDir);
+        $store = new FilesystemAccountStorage($keyDir);
         return $store;
     }
 
@@ -72,7 +72,7 @@ class LEAccountTest extends LETestCase
     {
         $conn = $this->mockConnector();
         $log = new NullLogger();
-        $store = $this->initCertStorage();
+        $store = $this->initAccountStorage();
 
         //at first, should not exist
         $this->assertNull($store->getAccountPrivateKey());
@@ -99,7 +99,7 @@ class LEAccountTest extends LETestCase
     {
         $conn = $this->mockConnector();
         $log = new NullLogger();
-        $store = $this->initCertStorage();
+        $store = $this->initAccountStorage();
 
         //at first, should not exist
         $this->assertNull($store->getAccountPrivateKey());
@@ -121,7 +121,7 @@ class LEAccountTest extends LETestCase
     {
         $conn = $this->mockConnector();
         $log = new NullLogger();
-        $store = $this->initCertStorage();
+        $store = $this->initAccountStorage();
 
         $account = new LEAccount($conn, $log, ['test@example.org'], $store);
 
@@ -133,7 +133,7 @@ class LEAccountTest extends LETestCase
     {
         $conn = $this->mockConnector();
         $log = new NullLogger();
-        $store = $this->initCertStorage();
+        $store = $this->initAccountStorage();
 
         $account = new LEAccount($conn, $log, ['test@example.org'], $store);
 
@@ -145,7 +145,7 @@ class LEAccountTest extends LETestCase
     {
         $conn = $this->mockConnector();
         $log = new NullLogger();
-        $store = $this->initCertStorage();
+        $store = $this->initAccountStorage();
 
         $account = new LEAccount($conn, $log, ['test@example.org'], $store);
 

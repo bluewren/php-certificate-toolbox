@@ -26,14 +26,6 @@ class FilesystemCertificateStorageTest extends LETestCase
         $this->deleteDirectory($dir);
         $store = new FilesystemCertificateStorage($dir);
 
-        $this->assertNull($store->getAccountPrivateKey());
-        $store->setAccountPrivateKey('abcd1234');
-        $this->assertEquals('abcd1234', $store->getAccountPrivateKey());
-
-        $this->assertNull($store->getAccountPublicKey());
-        $store->setAccountPublicKey('efgh2345');
-        $this->assertEquals('efgh2345', $store->getAccountPublicKey());
-
         $domain='*.example.org';
         $this->assertNull($store->getCertificate($domain));
         $store->setCertificate($domain, 'ijkl3456');
