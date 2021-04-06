@@ -61,16 +61,20 @@ ini_set('max_execution_time', 120); // Maximum execution time in seconds.
 Initiating the client:
 
 ```php
-use Elphin\LEClient;
+use Zwartpet\PHPCertificateToolbox\LEClient;
 
 // Initiating a basic LEClient with an array of string e-mail address(es).
 $client = new LEClient($email);                               
 
-// Initiating a LECLient and use the LetsEncrypt staging URL.
-$client = new LEClient($email, true);      
-
-// Initiating a LEClient and log status messages (LOG_DEBUG for full debugging).
-$client = new LEClient($email, true, LEClient::LOG_STATUS);   
+// Iniitiate client with all properties, optionally create your own storage classes.
+$client = new LEClient(
+        ['support@true.nl'],
+        LEClient::LE_PRODUCTION,
+        new DiagnosticLogger(),
+        new Client(),
+        new FilesystemCertificateStorage('cert storage url'),
+        new FilesystemAccountStorage('account storage url')
+);
 ```
 
 The client will automatically create a new account if there isn't one found. It will forward 
