@@ -72,8 +72,8 @@ $client = new LEClient(
         LEClient::LE_PRODUCTION,
         new DiagnosticLogger(),
         new Client(),
-        new FilesystemCertificateStorage('cert storage url'),
-        new FilesystemAccountStorage('account storage url')
+        new FilesystemCertificateStorage('cert storage path'),
+        new FilesystemAccountStorage('account storage path')
 );
 ```
 
