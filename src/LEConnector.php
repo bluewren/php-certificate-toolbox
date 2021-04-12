@@ -105,7 +105,7 @@ class LEConnector
      */
     public function checkHTTPChallenge($domain, $token, $keyAuthorization)
     {
-        $requestURL = $domain . '/.well-known/acme-challenge/' . $token;
+        $requestURL = 'http://' . $domain . '/.well-known/acme-challenge/' . $token;
 
         $request = new Request('GET', $requestURL);
 
