@@ -2,6 +2,8 @@ version: 2
 updates:
 - package-ecosystem: composer
   directory: "/"
+  allow:
+      - dependency-type: "all"
   schedule:
     interval: daily
     time: "04:00"
