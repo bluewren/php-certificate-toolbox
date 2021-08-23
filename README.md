@@ -270,9 +270,6 @@ the web! I am in no way responsible if your private keys go public. If this does
 easiest solution is to change your account keys (described above) or deactivate your account and 
 create a new one. Next, create a new certificate.
 
-If you discover any security related issues, please email paul@elphin.com instead of using the 
-issue tracker.
-
 ## Credits
 
 - [Paul Dixon][link-author] Refactoring inc unit tests and storage interface
