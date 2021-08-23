@@ -80,6 +80,8 @@ $client = new LEClient(
 The client will automatically create a new account if there isn't one found. It will forward 
 the e-mail address(es) supplied during initiation, as shown above.
 
+Note: As letsencrypt cleans up its orders, storage should be cleaned up after a certificate is issued. Account storage should be preserved.
+
 <br />
 
 Using the account functions:
