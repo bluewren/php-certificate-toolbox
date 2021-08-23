@@ -68,7 +68,7 @@ $client = new LEClient($email);
 
 // Iniitiate client with all properties, optionally create your own storage classes.
 $client = new LEClient(
-        ['support@true.nl'],
+        ['support@example.com'],
         LEClient::LE_PRODUCTION,
         new DiagnosticLogger(),
         new Client(),
