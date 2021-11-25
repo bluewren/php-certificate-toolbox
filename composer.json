@@ -1,5 +1,5 @@
 {
-    "name": "zwartpet/php-certificate-toolbox",
+    "name": "bluewren/php-certificate-toolbox",
     "type": "library",
     "description": "ACME v2 client for Let's Encrypt",
     "keywords": [
