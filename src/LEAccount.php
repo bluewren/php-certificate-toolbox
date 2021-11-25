@@ -1,4 +1,5 @@
 <?php
+
 namespace Zwartpet\PHPCertificateToolbox;
 
 use Zwartpet\PHPCertificateToolbox\Exception\RuntimeException;
@@ -45,14 +46,17 @@ class LEAccount
         $this->log = $log;
 
         if (empty($storage->getAccountPublicKey()) || empty($storage->getAccountPrivateKey())) {
-            $this->log->notice("No account found for ".implode(',', $email).", attempting to create account");
 
+            $this->log->notice("No account found for " . implode(',', $email) . ", attempting to create account");
             $accountKey = LEFunctions::RSAgenerateKeys();
+
+
             $storage->setAccountPublicKey($accountKey['public']);
             $storage->setAccountPrivateKey($accountKey['private']);
 
             $this->connector->accountURL = $this->createLEAccount($email);
         } else {
+
             $this->connector->accountURL = $this->getLEAccount();
         }
         if ($this->connector->accountURL === false) {
@@ -177,7 +181,7 @@ class LEAccount
      */
     public function changeAccountKeys()
     {
-        $new=LEFunctions::RSAgenerateKeys();
+        $new = LEFunctions::RSAgenerateKeys();
 
         $privateKey = openssl_pkey_get_private($new['private']);
         if ($privateKey === false) {

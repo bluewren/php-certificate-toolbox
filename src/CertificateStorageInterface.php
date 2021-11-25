@@ -82,11 +82,4 @@ interface CertificateStorageInterface
      * @param $value string value to store under given key
      */
     public function setMetadata($key, $value);
-
-    /**
-     * Check if persistent metadata for given key is available
-     * @param $key
-     * @return string|null
-     */
-    public function hasMetadata($key);
 }

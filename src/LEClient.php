@@ -85,6 +85,7 @@ class LEClient
 
         $this->httpClient = $httpClient ?? new Client();
 
+
         $this->storage = $storage ?? new FilesystemCertificateStorage();
         $this->accountStorage = $accountStorage ?? new FilesystemAccountStorage();
         $this->dns = $dnsValidator ?? new DNSOverHTTPS();

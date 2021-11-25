@@ -2,6 +2,7 @@
 
 namespace Zwartpet\PHPCertificateToolbox;
 
+use Illuminate\Support\Facades\Storage;
 use Zwartpet\PHPCertificateToolbox\Exception\RuntimeException;
 
 /**
@@ -14,19 +15,12 @@ class FilesystemCertificateStorage implements CertificateStorageInterface
 
     public function __construct($dir = null)
     {
-        $this->dir = $dir ?? getcwd().DIRECTORY_SEPARATOR.'certificates';
-
-        if (!is_dir($this->dir)) {
-            /** @scrutinizer ignore-unhandled */ @mkdir($this->dir);
-        }
-        if (!is_writable($this->dir)) {
-            throw new RuntimeException("{$this->dir} is not writable");
-        }
+        $this->dir = $dir ?? "/certs";
     }
 
     private function getDomainKey($domain, $suffix)
     {
-        return str_replace('*', 'wildcard', $domain).'.'.$suffix;
+        return str_replace('*', 'wildcard', $domain) . '.' . $suffix;
     }
     /**
      * @inheritdoc
@@ -94,8 +88,8 @@ class FilesystemCertificateStorage implements CertificateStorageInterface
 
     private function getMetadataFilename($key)
     {
-        $key=str_replace('*', 'wildcard', $key);
-        $file=$this->dir.DIRECTORY_SEPARATOR.$key;
+        $key = str_replace('*', 'wildcard', $key);
+        $file = $this->dir . DIRECTORY_SEPARATOR . $key;
         return $file;
     }
     /**
@@ -103,11 +97,9 @@ class FilesystemCertificateStorage implements CertificateStorageInterface
      */
     public function getMetadata($key)
     {
-        $file=$this->getMetadataFilename($key);
-        if (!file_exists($file)) {
-            return null;
-        }
-        return file_get_contents($file);
+        $file = $this->getMetadataFilename($key);
+
+        return Storage::exists($file) ? Storage::get($file) : null;
     }
 
     /**
@@ -115,15 +107,16 @@ class FilesystemCertificateStorage implements CertificateStorageInterface
      */
     public function setMetadata($key, $value)
     {
-        $file=$this->getMetadataFilename($key);
-        if (is_null($value)) {
-            //nothing to store, ensure file is removed
-            if (file_exists($file)) {
-                unlink($file);
-            }
-        } else {
-            file_put_contents($file, $value);
-        }
+        $file = $this->getMetadataFilename($key);
+        // if (is_null($value)) {
+        //     //nothing to store, ensure file is removed
+        //     if (file_exists($file)) {
+        //         unlink($file);
+        //     }
+        // } else {
+
+        Storage::put($file, $value);
+        // }
     }
 
     /**
@@ -131,7 +124,7 @@ class FilesystemCertificateStorage implements CertificateStorageInterface
      */
     public function hasMetadata($key)
     {
-        $file=$this->getMetadataFilename($key);
-        return file_exists($file);
+        $file = $this->getMetadataFilename($key);
+        return Storage::exists($file);
     }
 }
