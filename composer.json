@@ -12,26 +12,15 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "John Zwarthoed",
-            "homepage": "https://github.com/zwartpet",
-            "role": "Developer"
-        },
-        {
-            "name": "Paul Dixon",
-            "email": "paul@elphin.com",
-            "homepage": "http://blog.dixo.net",
-            "role": "Developer"
-        },
-        {
-            "name": "Youri van Weegberg",
-            "homepage": "https://github.com/yourivw/LEClient",
+            "name": "Bluewren",
+            "homepage": "https://github.com/bluewren",
             "role": "Developer"
         }
     ],
     "require": {
         "php": "~7.0",
         "ext-openssl": "*",
-        "guzzlehttp/guzzle": "^6.0",
+        "guzzlehttp/guzzle": "^7.0.1",
         "psr/log": "^1.0"
     },
     "require-dev": {
